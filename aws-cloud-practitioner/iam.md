@@ -21,8 +21,7 @@ IAM is a global service, not tied to any specific AWS region.
 ## Access Methods
 
 - **AWS Management Console**: Browser-based; authenticate with username, password, and optional MFA
-- **AWS CLI**: Command-line tool; (recommended for v2) keyless log in via `aws login` ([docs](https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-sign-in.html)), or use `aws configure` with an access key ID and secret access key created from console
-- **AWS SDK**: Programmatic access for applications; uses access keys in code or environment variables
+- **AWS CLI**: Command-line tool; authenticate via long-lived access keys using `aws configure`, or use modern keyless browser-based login via `aws login` (recommended, for standard IAM Users, [docs](https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-sign-in.html)) or `aws sso login` (for IAM Identity Center/SSO environments)
 
 ## Shared Responsibility Model
 
