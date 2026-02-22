@@ -44,7 +44,6 @@ commit-message/
 ## Related
 
 - [`skill-creation/README.md`](../skill-creation/README.md) - How skills are structured
-- [`CONTRIBUTING.md`](../../CONTRIBUTING.md) - Project git conventions
 
 ---
 
