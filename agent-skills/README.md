@@ -1,6 +1,6 @@
 # README - Agent Skills
 
-> **Last Updated**: 2026-02-05 by Keming He
+> **Last Updated**: 2026-02-22 by Keming He
 
 AI-consumable skills following the [agentskills.io](https://agentskills.io) specification. Each skill enables AI agents to perform specific documentation and workflow tasks.
 
@@ -40,8 +40,6 @@ See [`skill-creation/README.md`](./skill-creation/README.md) for the full proces
 ## References
 
 - [agentskills.io Specification](https://agentskills.io/specification) - Official standard
-- [`CONTRIBUTING.md`](../CONTRIBUTING.md) - Contributing guidelines
-- [`SECURITY.md`](../SECURITY.md) - Security and verification guidance
 
 ---
 
