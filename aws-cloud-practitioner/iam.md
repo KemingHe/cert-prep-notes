@@ -49,7 +49,3 @@ IAM is a global service, not tied to any specific AWS region.
 - Assign users to groups and attach policies to groups rather than to individual users for scalable permission management
 - Assign one IAM user per physical person to maintain individual accountability
 - Never share IAM users or access keys between people or applications
-
----
-
-> Study Notes Template v1.0.0 - KemingHe/cert-prep-notes
