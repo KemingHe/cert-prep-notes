@@ -39,18 +39,18 @@ Instance names follow the pattern `[family][generation][options].[size]`, e.g., 
 
 | Type | Attachment | Persistence | Notes |
 | :--- | :--- | :--- | :--- |
-| **EBS** (Elastic Block Store) | Network-attached | Survives instance stop; root volume deleted on termination by default, data volumes are not | Single-AZ; attaches to one instance at a time |
+| **EBS** (Elastic Block Store) | Network-attached | Conditional (see notes below) | Single-AZ; attaches to one instance at a time |
 | **EFS** (Elastic File System) | Network-attached | Survives independently | Shared across many instances and AZs; scales automatically; Linux only |
 | **Instance Store** | Hardware-attached (physical disk on host) | Ephemeral - data lost on stop or terminate | Highest I/O performance; use for temp data, caches, or buffers only |
 
 - Stopping an instance preserves all EBS and EFS data; private IP and IAM role are also retained
-- Terminating an instance permanently deletes instance store data and the root EBS volume (by default)
+- Terminating an instance permanently deletes instance store data and the root EBS volume (by default); attached EBS data volumes persist unless configured with DeleteOnTermination
 
 ## Networking and IP Addressing
 
 - **Public IP**: Assigned from AWS's pool on instance start; changes every time the instance is stopped and restarted
 - **Private IP**: Assigned within the VPC at launch; persistent across stop/start cycles for the life of the instance
-- **Elastic IP**: Static public IPv4 address you allocate to your account; survives stop/start and can be remapped to another instance - charged when not associated with a running instance; use sparingly
+- **Elastic IP**: Static public IPv4 address you allocate to your account; survives stop/start and can be remapped to another instance; charged when not associated with a running instance; use sparingly
 
 ## Security Groups
 
@@ -76,7 +76,7 @@ Security groups are stateful firewalls controlling inbound and outbound traffic 
 ### Connecting to Instances
 
 - **Linux / macOS / Windows 10+**: `ssh -i [key].pem ec2-user@[public-ip]`; first run `chmod 400 [key].pem` to protect the key file
-- **Older Windows** (Win10<): PuTTY with a `.ppk` converted key
+- **Older Windows (before Windows 10)**: PuTTY with a `.ppk` converted key
 - **EC2 Instance Connect**: browser-based SSH from the AWS Console; no local SSH client needed; works from any OS
 
 ### Troubleshooting
@@ -130,7 +130,7 @@ Key rules:
 ## Best Practices
 
 - Attach IAM roles to EC2 instances for AWS API access - never store access keys directly on an instance
-- _Maintain a dedicated security group for SSH/RDP access with restricted source IPs; keep it separate from application traffic rules_
+- Maintain a dedicated security group for SSH/RDP access with restricted source IPs; keep it separate from application traffic rules
 - Use EC2 User Data for repeatable bootstrapping; bake frequently reused setup into a custom AMI to reduce boot time
 - Prefer Savings Plans over Reserved Instances for most workloads - more flexible at similar discount levels
 - Design Spot Instance workloads to checkpoint state and handle the 2-minute interruption warning gracefully
