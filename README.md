@@ -1,6 +1,6 @@
 # README - Certification Preparation Notes
 
-> **Last Updated**: 2026-02-22 by Keming He
+> **Last Updated**: 2026-02-25 by Keming He
 
 Personal certification preparation study notes for cloud, infrastructure, and security exams, organized by the `[organization]-[certification]/` directory pattern.
 
@@ -9,4 +9,3 @@ Personal certification preparation study notes for cloud, infrastructure, and se
 | Directory | Purpose |
 | :--- | :--- |
 | [`aws-cloud-practitioner/`](./aws-cloud-practitioner/README.md) | AWS Cloud Practitioner (CLF-C02) exam notes |
-| [`agent-skills/`](./agent-skills/README.md) | AI skills for documentation tasks |

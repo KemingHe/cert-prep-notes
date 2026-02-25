@@ -135,7 +135,3 @@ Key rules:
 - Prefer Savings Plans over Reserved Instances for most workloads - more flexible at similar discount levels
 - Design Spot Instance workloads to checkpoint state and handle the 2-minute interruption warning gracefully
 - Use DNS names or load balancers for stable endpoints rather than Elastic IPs to avoid idle IP charges
-
----
-
-> Study Notes Template v1.0.0 - KemingHe/cert-prep-notes
