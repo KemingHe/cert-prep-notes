@@ -1,6 +1,26 @@
 # Study Notes - Amazon EC2 (Elastic Compute Cloud)
 
-> **Last Updated**: 2026-02-24 by Keming He
+> **Last Updated**: 2026-02-25 by Keming He
+
+## Table of Contents
+
+- [Study Notes - Amazon EC2 (Elastic Compute Cloud)](#study-notes---amazon-ec2-elastic-compute-cloud)
+  - [Table of Contents](#table-of-contents)
+  - [What is EC2?](#what-is-ec2)
+  - [Amazon Machine Image (AMI)](#amazon-machine-image-ami)
+  - [Instance Types and Naming](#instance-types-and-naming)
+  - [Storage Options](#storage-options)
+  - [Networking and IP Addressing](#networking-and-ip-addressing)
+  - [Security Groups](#security-groups)
+    - [Key Ports](#key-ports)
+    - [Connecting to Instances](#connecting-to-instances)
+    - [Troubleshooting](#troubleshooting)
+  - [EC2 User Data (Bootstrap Scripts)](#ec2-user-data-bootstrap-scripts)
+  - [Purchasing Options](#purchasing-options)
+  - [Shared Responsibility Model](#shared-responsibility-model)
+    - [AWS Responsibilities](#aws-responsibilities)
+    - [Customer Responsibilities](#customer-responsibilities)
+  - [Best Practices](#best-practices)
 
 ## What is EC2?
 
@@ -13,6 +33,10 @@ EC2 (Elastic Compute Cloud) is AWS's IaaS offering for renting virtual machines 
 
 An EC2 instance is fully defined by: AMI (OS) + instance size (CPU + RAM) + storage + security groups + IAM role + EC2 User Data (bootstrap script).
 
+> [↑ Back to Table of Contents](#table-of-contents)
+
+---
+
 ## Amazon Machine Image (AMI)
 
 An AMI is a pre-configured template containing the OS and software stack used to launch EC2 instances.
@@ -21,6 +45,10 @@ An AMI is a pre-configured template containing the OS and software stack used to
 - **Sources**: AWS-provided, AWS Marketplace, community-published, or custom (captured from an existing running instance)
 - One AMI can launch many instances with identical configurations
 - Custom AMIs let you pre-bake software so instances launch faster with less User Data work
+
+> [↑ Back to Table of Contents](#table-of-contents)
+
+---
 
 ## Instance Types and Naming
 
@@ -35,6 +63,10 @@ Instance names follow the pattern `[family][generation][options].[size]`, e.g., 
 | Accelerated computing | `p`, `g`, `f`, `inf`, `trn` | GPU workloads, FPGA, ML inference and training |
 | HPC optimized | `hpc` | Tightly coupled high-performance computing with enhanced networking |
 
+> [↑ Back to Table of Contents](#table-of-contents)
+
+---
+
 ## Storage Options
 
 | Type | Attachment | Persistence | Notes |
@@ -46,11 +78,19 @@ Instance names follow the pattern `[family][generation][options].[size]`, e.g., 
 - Stopping an instance preserves all EBS and EFS data; private IP and IAM role are also retained
 - Terminating an instance permanently deletes instance store data and the root EBS volume (by default); attached EBS data volumes persist unless configured with DeleteOnTermination
 
+> [↑ Back to Table of Contents](#table-of-contents)
+
+---
+
 ## Networking and IP Addressing
 
 - **Public IP**: Assigned from AWS's pool on instance start; changes every time the instance is stopped and restarted
 - **Private IP**: Assigned within the VPC at launch; persistent across stop/start cycles for the life of the instance
 - **Elastic IP**: Static public IPv4 address you allocate to your account; survives stop/start and can be remapped to another instance; charged when not associated with a running instance; use sparingly
+
+> [↑ Back to Table of Contents](#table-of-contents)
+
+---
 
 ## Security Groups
 
@@ -84,11 +124,19 @@ Security groups are stateful firewalls controlling inbound and outbound traffic 
 - **Connection timeout**: security group inbound rule is missing or misconfigured
 - **Connection refused**: instance is reachable but no SSH daemon or application is listening on the port; try restarting the instance
 
+> [↑ Back to Table of Contents](#table-of-contents)
+
+---
+
 ## EC2 User Data (Bootstrap Scripts)
 
 - Runs **once only** at first instance launch, as the `root` user (no `sudo` needed)
 - Common uses: install packages, pull application code, write config files - any one-time setup before the app starts
 - Longer User Data = longer first-boot time; bake frequently repeated setup into a custom AMI instead
+
+> [↑ Back to Table of Contents](#table-of-contents)
+
+---
 
 ## Purchasing Options
 
@@ -110,6 +158,10 @@ Key rules:
 - Standard RIs can be listed and sold in the RI Marketplace; Convertible RIs cannot
 - Spot usage beyond a Savings Plan commitment is billed at On-Demand rates
 
+> [↑ Back to Table of Contents](#table-of-contents)
+
+---
+
 ## Shared Responsibility Model
 
 ### AWS Responsibilities
@@ -127,6 +179,10 @@ Key rules:
 - IAM role and policy assignments to instances
 - Data encryption at rest (EBS/EFS) and in transit
 
+> [↑ Back to Table of Contents](#table-of-contents)
+
+---
+
 ## Best Practices
 
 - Attach IAM roles to EC2 instances for AWS API access - never store access keys directly on an instance
@@ -135,3 +191,5 @@ Key rules:
 - Prefer Savings Plans over Reserved Instances for most workloads - more flexible at similar discount levels
 - Design Spot Instance workloads to checkpoint state and handle the 2-minute interruption warning gracefully
 - Use DNS names or load balancers for stable endpoints rather than Elastic IPs to avoid idle IP charges
+
+> [↑ Back to Table of Contents](#table-of-contents)
