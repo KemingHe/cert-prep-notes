@@ -44,3 +44,11 @@
 - [Best practice 2]
 
 > [↑ Back to Table of Contents](#table-of-contents)
+
+---
+
+## References
+
+- [Reference title](url) - brief description
+
+> [↑ Back to Table of Contents](#table-of-contents)
