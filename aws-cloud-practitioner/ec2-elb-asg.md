@@ -153,7 +153,7 @@ Operates at Layer 4 (transport layer) for ultra-high performance and static IP r
 
 **Cross-zone load balancing**: Disabled by default (can enable)
 
-**Routing**: Uses 5-tuple flow hash (protocol, source/dest IP, source/dest port, TCP sequence)
+**Routing**: Uses 5-tuple flow hash (protocol, source IP, destination IP, source port, destination port)
 
 > [↑ Back to Table of Contents](#table-of-contents)
 
@@ -172,11 +172,7 @@ Operates at Layer 3 (network layer) for routing traffic through third-party secu
 - Deep packet inspection
 - Network traffic analysis
 
-**How it works**: GWLB acts as a transparent network gateway. Traffic flows: source -> GWLB -> security appliance for inspection -> GWLB -> destination (if safe).
-
-> [!NOTE]
->
-> GWLB does NOT terminate connections - it is pass-through only.
+**How it works**: GWLB acts as a transparent network gateway. Traffic flows: source -> GWLB -> security appliance for inspection -> GWLB -> destination (if safe). GWLB does NOT terminate connections - it is pass-through only.
 
 **Cross-zone load balancing**: Disabled by default
 
