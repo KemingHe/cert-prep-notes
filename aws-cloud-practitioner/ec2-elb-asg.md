@@ -1,6 +1,6 @@
 # Study Notes - EC2 Scalability, ELB, and ASG
 
-> **Last Updated**: 2026-03-06 by Keming He
+> **Last Updated**: 2026-03-07 by Keming He
 
 ## Table of Contents
 
@@ -51,7 +51,7 @@ AWS recommends [horizontal scaling to reduce single points of failure](https://d
 
 ### Elasticity
 
-The ability to [acquire resources as you need them _and release resources when you no longer need them_](https://wa.aws.amazon.com/wellarchitected/2020-07-02T19-33-23/wat.concept.elasticity.en.html) - automatically.
+The ability to [acquire resources as you need them _and release resources when you no longer need them_](https://docs.aws.amazon.com/whitepapers/latest/cost-optimization-automating-elasticity/introduction.html) - automatically.
 
 | Concept | Key Differentiator |
 | :--- | :--- |
@@ -112,7 +112,7 @@ Classic Load Balancer still functions for VPC deployments but receives no new fe
 
 ## Application Load Balancer (ALB)
 
-Operates at Layer 7 (application layer) and is the best choice for HTTP/HTTPS workloads. See [ALB documentation](https://docs.aws.amazon.com/elasticloadbalancing/latest/application/application-load-balancers.html).
+Operates at Layer 7 (application layer) and is the best choice for HTTP/HTTPS workloads. See [Application Load Balancers user guide](https://docs.aws.amazon.com/elasticloadbalancing/latest/application/application-load-balancers.html).
 
 **Protocols**: HTTP, HTTPS, gRPC (via HTTP/2), WebSocket
 
@@ -135,7 +135,7 @@ Operates at Layer 7 (application layer) and is the best choice for HTTP/HTTPS wo
 
 ## Network Load Balancer (NLB)
 
-Operates at Layer 4 (transport layer) for ultra-high performance and static IP requirements. See [NLB documentation](https://docs.aws.amazon.com/elasticloadbalancing/latest/network/network-load-balancers.html).
+Operates at Layer 4 (transport layer) for ultra-high performance and static IP requirements. See [Network Load Balancers user guide](https://docs.aws.amazon.com/elasticloadbalancing/latest/network/network-load-balancers.html).
 
 **Protocols**: TCP, UDP, TLS, QUIC
 
@@ -162,7 +162,7 @@ Operates at Layer 4 (transport layer) for ultra-high performance and static IP r
 
 ## Gateway Load Balancer (GWLB)
 
-Operates at Layer 3 (network layer) for routing traffic through third-party security virtual appliances. See [GWLB documentation](https://docs.aws.amazon.com/elasticloadbalancing/latest/gateway/gateway-load-balancers.html).
+Operates at Layer 3 (network layer) for routing traffic through third-party security virtual appliances. See [Gateway Load Balancers user guide](https://docs.aws.amazon.com/elasticloadbalancing/latest/gateway/gateway-load-balancers.html).
 
 **Protocol**: GENEVE (port 6081) - encapsulates all IP traffic
 
@@ -239,7 +239,7 @@ Automatically adjusts capacity based on CloudWatch metrics.
 
 ### Scheduled Scaling
 
-Scale at specific times using one-time or recurring (cron) schedules. Use for known traffic patterns (business hours, weekends, batch jobs). See [scheduled scaling documentation](https://docs.aws.amazon.com/autoscaling/ec2/userguide/ec2-auto-scaling-scheduled-scaling.html).
+Scale at specific times using one-time or recurring (cron) schedules. Use for known traffic patterns (business hours, weekends, batch jobs). See [scheduled scaling in Amazon EC2 Auto Scaling](https://docs.aws.amazon.com/autoscaling/ec2/userguide/ec2-auto-scaling-scheduled-scaling.html).
 
 ### Predictive Scaling (ML-Based)
 

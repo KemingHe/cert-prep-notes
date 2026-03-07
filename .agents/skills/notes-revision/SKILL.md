@@ -126,8 +126,17 @@ Return a structured summary:
 All verified facts from subagent research must include inline source links.
 
 - **Format**: `[descriptive text](url)` where text is meaningful, not generic
-- **Good example**: `[Six Advantages of Cloud Computing](https://docs.aws.amazon.com/whitepapers/latest/aws-overview/six-advantages-of-cloud-computing.html)`
-- **Bad example**: `click here` or `see docs`
+- **Good examples**:
+  - `[Six Advantages of Cloud Computing](url)` - descriptive concept name
+  - `[Application Load Balancers user guide](url)` - specific resource type + guide
+  - `[scheduled scaling in Amazon EC2 Auto Scaling](url)` - feature + service context
+- **Bad examples**:
+  - `click here` or `see docs` - too generic
+  - `[ALB documentation](url)` - generic "documentation" label
+  - `[see this page](url)` - non-descriptive anchor
+- **URL preferences**:
+  - Prefer canonical URLs over dated snapshots (i.e. `docs.aws.amazon.com` over `wa.aws.amazon.com/wellarchitected/2020-07-02T19-33-23/...`)
+  - Use `/latest/` paths when available for evergreen links
 - **When to link**: Every verified claim (definitions, feature lists, version numbers, deprecation dates, best practices)
 - **References section**: Include only URLs NOT already inlined; use for broad resources or further reading that lack a natural inline anchor
 
