@@ -7,7 +7,7 @@ description: |
 license: MIT
 metadata:
   author: KemingHe
-  version: "1.0.0"
+  version: "1.1.0"
 ---
 
 # Notes Revision
@@ -118,7 +118,27 @@ Return a structured summary:
 5. `> [↑ Back to Table of Contents](#table-of-contents)` after each level 2 section
 6. `---` separator between back link and next section (except at EOF)
 7. `## Shared Responsibility Model` section (for cloud services)
-8. `## Best Practices` section (final section)
+8. `## Best Practices` section (second-to-last section)
+9. `## References` section (final section)
+
+**Reference linking policy**:
+
+All verified facts from subagent research must include inline source links.
+
+- **Format**: `[descriptive text](url)` where text is meaningful, not generic
+- **Good examples**:
+  - `[Six Advantages of Cloud Computing](url)` - descriptive concept name
+  - `[Application Load Balancers user guide](url)` - specific resource type + guide
+  - `[scheduled scaling in Amazon EC2 Auto Scaling](url)` - feature + service context
+- **Bad examples**:
+  - `click here` or `see docs` - too generic
+  - `[ALB documentation](url)` - generic "documentation" label
+  - `[see this page](url)` - non-descriptive anchor
+- **URL preferences**:
+  - Prefer canonical URLs over dated snapshots (i.e. `docs.aws.amazon.com` over `wa.aws.amazon.com/wellarchitected/2020-07-02T19-33-23/...`)
+  - Use `/latest/` paths when available for evergreen links
+- **When to link**: Every verified claim (definitions, feature lists, version numbers, deprecation dates, best practices)
+- **References section**: Include only URLs NOT already inlined; use for broad resources or further reading that lack a natural inline anchor
 
 **Apply documentation review checklist**:
 
@@ -157,6 +177,7 @@ Apply to all generated output. If a discovered template deviates from any rule (
 
 - **Parallel agents mandatory**: Fact-checking with 3-4 parallel subagents is non-negotiable
 - **Date stamp all facts**: Every verified fact must include verification date
+- **Inline source links required**: All verified facts must include inline links to official documentation
 - **Reorganize by logic**: Do not blindly preserve user's original note order
 - **ToC is tooling-generated**: Never manually maintain Table of Contents
 - **Platform-agnostic**: Works for AWS, Azure, GCP, Terraform, Kubernetes, or any certification

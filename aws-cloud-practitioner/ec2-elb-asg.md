@@ -1,6 +1,6 @@
 # Study Notes - EC2 Scalability, ELB, and ASG
 
-> **Last Updated**: 2026-03-06 by Keming He
+> **Last Updated**: 2026-03-07 by Keming He
 
 ## Table of Contents
 
@@ -32,6 +32,7 @@
     - [AWS Responsibilities](#aws-responsibilities)
     - [Customer Responsibilities](#customer-responsibilities)
   - [Best Practices](#best-practices)
+  - [References](#references)
 
 ## Scalability Concepts
 
@@ -46,11 +47,11 @@ The ability of a system to adapt and meet increasing demand over time as it grow
 | **Vertical** (scale up/down) | Single resource | Increase or decrease individual resource capacity | t3.medium to t3.xlarge |
 | **Horizontal** (scale out/in) | Multiple resources | Add or remove resources to distribute load | 2 instances to 10 instances |
 
-AWS recommends horizontal scaling to reduce single points of failure - replacing one large resource with multiple smaller ones.
+AWS recommends [horizontal scaling to reduce single points of failure](https://docs.aws.amazon.com/wellarchitected/latest/reliability-pillar/design-principles.html) - replacing one large resource with multiple smaller ones.
 
 ### Elasticity
 
-The ability to acquire resources as you need them _and release resources when you no longer need them_ - automatically.
+The ability to [acquire resources as you need them _and release resources when you no longer need them_](https://docs.aws.amazon.com/whitepapers/latest/cost-optimization-automating-elasticity/introduction.html) - automatically.
 
 | Concept | Key Differentiator |
 | :--- | :--- |
@@ -67,7 +68,7 @@ In AWS context, agility means new IT resources are only a click away - reducing 
 
 ### High Availability
 
-Avoiding single points of failure by deploying workloads across at least two Availability Zones.
+Avoiding single points of failure by [deploying workloads across at least two Availability Zones](https://docs.aws.amazon.com/wellarchitected/latest/reliability-pillar/rel_fault_isolation_multiaz_region_system.html).
 
 - Each AWS Region has 3+ AZs, geographically close but physically separated (independent power, cooling, networking)
 - Inter-AZ latency is single-digit milliseconds (enables synchronous replication)
@@ -103,7 +104,7 @@ ELB is a managed service - AWS handles provisioning, scaling, and maintenance.
 | **GWLB** (Gateway) | 3 | GENEVE (all IP packets) | No | Third-party security appliances, firewalls |
 | **CLB** (Classic) | 4 + 7 | HTTP, HTTPS, TCP, SSL | No | Legacy - migrate to ALB or NLB |
 
-Classic Load Balancer still functions for VPC deployments but receives no new features. EC2-Classic networking was fully retired August 15, 2022.
+Classic Load Balancer still functions for VPC deployments but receives no new features - [migrate to ALB or NLB](https://docs.aws.amazon.com/elasticloadbalancing/latest/userguide/migrate-classic-load-balancer.html). EC2-Classic networking was fully retired August 15, 2022.
 
 > [↑ Back to Table of Contents](#table-of-contents)
 
@@ -111,7 +112,7 @@ Classic Load Balancer still functions for VPC deployments but receives no new fe
 
 ## Application Load Balancer (ALB)
 
-Operates at Layer 7 (application layer) and is the best choice for HTTP/HTTPS workloads.
+Operates at Layer 7 (application layer) and is the best choice for HTTP/HTTPS workloads. See [Application Load Balancers user guide](https://docs.aws.amazon.com/elasticloadbalancing/latest/application/application-load-balancers.html).
 
 **Protocols**: HTTP, HTTPS, gRPC (via HTTP/2), WebSocket
 
@@ -134,7 +135,7 @@ Operates at Layer 7 (application layer) and is the best choice for HTTP/HTTPS wo
 
 ## Network Load Balancer (NLB)
 
-Operates at Layer 4 (transport layer) for ultra-high performance and static IP requirements.
+Operates at Layer 4 (transport layer) for ultra-high performance and static IP requirements. See [Network Load Balancers user guide](https://docs.aws.amazon.com/elasticloadbalancing/latest/network/network-load-balancers.html).
 
 **Protocols**: TCP, UDP, TLS, QUIC
 
@@ -161,7 +162,7 @@ Operates at Layer 4 (transport layer) for ultra-high performance and static IP r
 
 ## Gateway Load Balancer (GWLB)
 
-Operates at Layer 3 (network layer) for routing traffic through third-party security virtual appliances.
+Operates at Layer 3 (network layer) for routing traffic through third-party security virtual appliances. See [Gateway Load Balancers user guide](https://docs.aws.amazon.com/elasticloadbalancing/latest/gateway/gateway-load-balancers.html).
 
 **Protocol**: GENEVE (port 6081) - encapsulates all IP traffic
 
@@ -182,7 +183,7 @@ Operates at Layer 3 (network layer) for routing traffic through third-party secu
 
 ## Auto Scaling Groups Overview
 
-Auto Scaling Groups automatically adjust EC2 instance count to match demand - scaling out when load increases and scaling in when load decreases.
+[Auto Scaling Groups](https://docs.aws.amazon.com/autoscaling/ec2/userguide/auto-scaling-groups.html) automatically adjust EC2 instance count to match demand - scaling out when load increases and scaling in when load decreases.
 
 **Core capacity settings**:
 
@@ -212,7 +213,7 @@ Auto Scaling Groups automatically adjust EC2 instance count to match demand - sc
 | **New instance types** | Fully supported | Not supported after Jan 1, 2023 |
 | **Mixed instances** | Yes (Spot + On-Demand mixing) | No |
 
-AWS recommends launch templates for all new deployments. Existing launch configurations should be migrated.
+AWS recommends launch templates for all new deployments. Existing launch configurations should be [migrated to launch templates](https://docs.aws.amazon.com/autoscaling/ec2/userguide/migrate-to-launch-templates.html).
 
 > [↑ Back to Table of Contents](#table-of-contents)
 
@@ -230,7 +231,7 @@ Automatically adjusts capacity based on CloudWatch metrics.
 
 | Policy Type | Description | Use Case |
 | :--- | :--- | :--- |
-| **Target tracking** | Set target metric value; AWS manages alarms automatically (like a thermostat) | Most workloads - AWS recommended |
+| **[Target tracking](https://docs.aws.amazon.com/autoscaling/ec2/userguide/as-scaling-target-tracking.html)** | Set target metric value; AWS manages alarms automatically (like a thermostat) | Most workloads - AWS recommended |
 | **Step scaling** | Define step adjustments based on alarm breach magnitude | Fine-grained control at specific thresholds |
 | **Simple scaling** | Single adjustment when alarm triggers, then cooldown | Legacy - not recommended |
 
@@ -238,11 +239,11 @@ Automatically adjusts capacity based on CloudWatch metrics.
 
 ### Scheduled Scaling
 
-Scale at specific times using one-time or recurring (cron) schedules. Use for known traffic patterns (business hours, weekends, batch jobs).
+Scale at specific times using one-time or recurring (cron) schedules. Use for known traffic patterns (business hours, weekends, batch jobs). See [scheduled scaling in Amazon EC2 Auto Scaling](https://docs.aws.amazon.com/autoscaling/ec2/userguide/ec2-auto-scaling-scheduled-scaling.html).
 
 ### Predictive Scaling (ML-Based)
 
-Uses machine learning to forecast demand and pre-scale capacity.
+Uses machine learning to [forecast demand and pre-scale capacity](https://docs.aws.amazon.com/autoscaling/ec2/userguide/predictive-scaling-policy-overview.html).
 
 - Requires minimum 24 hours of metric data (2 weeks recommended)
 - Forecasts 48 hours ahead, updated every 6 hours
@@ -256,6 +257,8 @@ Uses machine learning to forecast demand and pre-scale capacity.
 ---
 
 ## ASG and ELB Integration
+
+See [attaching a load balancer to your ASG](https://docs.aws.amazon.com/autoscaling/ec2/userguide/attach-load-balancer-asg.html).
 
 ### Health Check Types
 
@@ -276,7 +279,7 @@ Time for new instances to warm up before contributing to CloudWatch metrics. Pre
 
 | Concept | Applies To | Purpose |
 | :--- | :--- | :--- |
-| Cooldown | Simple scaling only | Pause all scaling activities |
+| [Cooldown](https://docs.aws.amazon.com/autoscaling/ec2/userguide/ec2-auto-scaling-scaling-cooldowns.html) | Simple scaling only | Pause all scaling activities |
 | Instance warmup | Target tracking, step scaling | Exclude warming instances from metrics |
 
 > [↑ Back to Table of Contents](#table-of-contents)
@@ -285,7 +288,7 @@ Time for new instances to warm up before contributing to CloudWatch metrics. Pre
 
 ## Multi-AZ Deployment
 
-ASG distributes instances across selected Availability Zones for high availability.
+ASG [distributes instances across selected Availability Zones](https://docs.aws.amazon.com/autoscaling/ec2/userguide/ec2-auto-scaling-availability-zone-balanced.html) for high availability.
 
 | Distribution Strategy | Behavior |
 | :--- | :--- |
@@ -330,5 +333,16 @@ Configure by selecting subnets in multiple AZs during ASG creation.
 - Deploy across at least 2 AZs for high availability; ASG handles distribution automatically
 - Use ALB for HTTP/HTTPS workloads with content-based routing; use NLB when you need static IPs or ultra-low latency
 - Consider GWLB when integrating third-party security appliances (firewalls, IDS/IPS) into your traffic flow
+
+> [↑ Back to Table of Contents](#table-of-contents)
+
+---
+
+## References
+
+- [AWS Well-Architected Framework Definitions](https://docs.aws.amazon.com/wellarchitected/latest/framework/definitions.html) - official definitions for scalability, elasticity, and cloud concepts
+- [Comparing ELB Types](https://aws.amazon.com/compare/the-difference-between-the-difference-between-application-network-and-gateway-load-balancing/) - AWS comparison of ALB vs NLB vs GWLB
+- [How Elastic Load Balancing Works](https://docs.aws.amazon.com/elasticloadbalancing/latest/userguide/how-elastic-load-balancing-works.html) - ELB architecture and concepts
+- [Step Scaling Policies](https://docs.aws.amazon.com/autoscaling/ec2/userguide/as-scaling-simple-step.html) - detailed step scaling configuration
 
 > [↑ Back to Table of Contents](#table-of-contents)

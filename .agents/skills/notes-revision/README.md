@@ -1,6 +1,6 @@
 # README - Notes Revision
 
-> **Last Updated**: 2026-02-26 by Keming He
+> **Last Updated**: 2026-03-06 by Keming He
 
 Revise certification study notes with fact-checked content from official documentation - ensuring accuracy for AWS, Azure, GCP, Terraform, Kubernetes, or any platform certification prep.
 
@@ -15,6 +15,7 @@ Ask your AI agent to revise study notes:
 ## What It Does
 
 - Fact-checks notes against official documentation using parallel verification agents
+- Links verified facts to official documentation (inline + references section)
 - Reorganizes content by logical importance - not original note order
 - Applies consistent documentation standards and formatting
 - Adds verification dates and source URLs for traceability
