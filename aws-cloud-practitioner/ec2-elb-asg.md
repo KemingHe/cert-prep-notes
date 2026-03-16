@@ -104,7 +104,7 @@ ELB is a managed service - AWS handles provisioning, scaling, and maintenance.
 | **GWLB** (Gateway) | 3 | GENEVE (all IP packets) | No | Third-party security appliances, firewalls |
 | **CLB** (Classic) | 4 + 7 | HTTP, HTTPS, TCP, SSL | No | Legacy - migrate to ALB or NLB |
 
-Classic Load Balancer still functions for VPC deployments but receives no new features - [migrate to ALB or NLB](https://docs.aws.amazon.com/elasticloadbalancing/latest/userguide/migrate-classic-load-balancer.html). EC2-Classic networking retirement was [targeted for August 15, 2022 and confirmed complete August 23, 2023](https://aws.amazon.com/blogs/aws/ec2-classic-is-retiring-heres-how-to-prepare/).
+Classic Load Balancer still functions for VPC deployments but receives no new features - [migrate to ALB or NLB](https://docs.aws.amazon.com/elasticloadbalancing/latest/userguide/migrate-classic-load-balancer.html). EC2-Classic networking retirement was originally targeted for August 15, 2022, and was [confirmed complete on August 23, 2023](https://aws.amazon.com/blogs/aws/ec2-classic-is-retiring-heres-how-to-prepare/).
 
 > [↑ Back to Table of Contents](#table-of-contents)
 

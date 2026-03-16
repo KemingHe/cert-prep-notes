@@ -38,7 +38,7 @@
 
 ## Access Methods
 
-- **[AWS Management Console](https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-authentication.html)**: Browser-based; authenticate with username, password, and optional MFA
+- **[AWS Management Console](https://docs.aws.amazon.com/signin/latest/userguide/how-to-sign-in.html)**: Browser-based; authenticate with username, password, and optional MFA
 - **AWS CLI**: Command-line tool with multiple [authentication methods](https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-authentication.html)
   - [Long-lived access keys](https://docs.aws.amazon.com/cli/latest/userguide/cli-authentication-user.html) using `aws configure` (not recommended by AWS)
   - [Keyless browser-based login](https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-sign-in.html) via `aws login` (recommended for standard IAM users, requires CLI v2.32.0+)
