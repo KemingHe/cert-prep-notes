@@ -7,7 +7,7 @@ description: |
 license: MIT
 metadata:
   author: KemingHe
-  version: "1.1.0"
+  version: "1.2.0"
 ---
 
 # Notes Revision
@@ -151,7 +151,56 @@ All verified facts from subagent research must include inline source links.
 | Characters | QWERTY only (exception: `↑` for ToC) |
 | Linter | Check IDE linter errors after edits |
 
-### Step 5: Final Verification
+### Step 5: Self-Verification (CRITICAL)
+
+**Do NOT trust your own generated content.** After drafting, verify all claims as if they came from an external source.
+
+**5.1 Compile claims inventory**:
+
+Extract all verifiable claims from the generated draft:
+
+- Numeric values (percentages, limits, durations, capacities)
+- Dates (release dates, deprecation dates, effective dates)
+- Feature status (preview vs GA, deprecated, discontinued)
+- Behavioral defaults (enabled/disabled, required/optional)
+- Specific qualifiers (which tier, which analyzer type, which region)
+
+Organize claims by category for parallel verification.
+
+**5.2 Run second-pass verification**:
+
+Send 3-4 parallel subagents to verify the GENERATED claims (not user input):
+
+```plaintext
+Verify claims from the generated draft against official [PLATFORM] documentation.
+
+Use WebSearch and WebFetch to find the latest [PLATFORM] documentation ([CURRENT_YEAR]) for:
+1. [Claim from generated draft with line reference]
+2. [Claim from generated draft with line reference]
+3. [Claim from generated draft with line reference]
+...
+
+For each claim, return:
+- VERIFIED (exact match) or INCORRECT (with correction)
+- Source URL from official documentation
+- Verification date: [TODAY'S DATE]
+```
+
+**5.3 Double-check discrepancies**:
+
+For any claim marked INCORRECT:
+
+- Have a second agent independently verify the correction
+- Only apply corrections confirmed by both sources
+- This prevents replacing one hallucination with another
+
+**5.4 Apply corrections**:
+
+- Fix incorrect claims with verified information
+- Add missing inline source links for all corrections
+- Update Last Updated date to reflect verification date
+
+### Step 6: Final Verification
 
 After completing the revision:
 
@@ -176,6 +225,7 @@ Apply to all generated output. If a discovered template deviates from any rule (
 ## Skill Constraints
 
 - **Parallel agents mandatory**: Fact-checking with 3-4 parallel subagents is non-negotiable
+- **Self-verification mandatory**: After generating draft, run second-pass verification on own output before finalizing
 - **Date stamp all facts**: Every verified fact must include verification date
 - **Inline source links required**: All verified facts must include inline links to official documentation
 - **Reorganize by logic**: Do not blindly preserve user's original note order

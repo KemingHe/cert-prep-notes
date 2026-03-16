@@ -1,6 +1,6 @@
 # Study Notes - EC2 Scalability, ELB, and ASG
 
-> **Last Updated**: 2026-03-07 by Keming He
+> **Last Updated**: 2026-03-16 by Keming He
 
 ## Table of Contents
 
@@ -60,7 +60,7 @@ The ability to [acquire resources as you need them _and release resources when y
 
 Services _with built-in elasticity_: S3, SQS, SNS, Aurora Serverless, Athena
 
-Services _requiring configuration_: EC2/ECS via Auto Scaling, DynamoDB via provisioned capacity auto scaling
+Services _requiring configuration_: EC2/ECS via Auto Scaling, [DynamoDB in provisioned capacity mode](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/HowItWorks.ReadWriteCapacityMode.html) (on-demand mode provides built-in elasticity)
 
 ### Agility
 
@@ -99,12 +99,12 @@ ELB is a managed service - AWS handles provisioning, scaling, and maintenance.
 
 | Type | Layer | Protocols | Static IP | Best For |
 | :--- | :--- | :--- | :--- | :--- |
-| **ALB** (Application) | 7 | HTTP, HTTPS, gRPC, WebSocket | No | Web apps, microservices, content-based routing |
+| **ALB** (Application) | 7 | HTTP, HTTPS (gRPC via HTTP/2, WebSocket via upgrade) | No | Web apps, microservices, content-based routing |
 | **NLB** (Network) | 4 | TCP, UDP, TLS, QUIC | Yes (Elastic IP) | Ultra-high performance, static IPs, gaming |
 | **GWLB** (Gateway) | 3 | GENEVE (all IP packets) | No | Third-party security appliances, firewalls |
 | **CLB** (Classic) | 4 + 7 | HTTP, HTTPS, TCP, SSL | No | Legacy - migrate to ALB or NLB |
 
-Classic Load Balancer still functions for VPC deployments but receives no new features - [migrate to ALB or NLB](https://docs.aws.amazon.com/elasticloadbalancing/latest/userguide/migrate-classic-load-balancer.html). EC2-Classic networking was fully retired August 15, 2022.
+Classic Load Balancer still functions for VPC deployments but receives no new features - [migrate to ALB or NLB](https://docs.aws.amazon.com/elasticloadbalancing/latest/userguide/migrate-classic-load-balancer.html). EC2-Classic networking retirement was originally targeted for August 15, 2022, and was [confirmed complete on August 23, 2023](https://aws.amazon.com/blogs/aws/ec2-classic-is-retiring-heres-how-to-prepare/).
 
 > [↑ Back to Table of Contents](#table-of-contents)
 
@@ -142,19 +142,19 @@ Operates at Layer 4 (transport layer) for ultra-high performance and static IP r
 **Performance characteristics**:
 
 - Handles millions of requests per second
-- Ultra-low latency (~100 microseconds)
-- Preserves source IP by default
+- [Ultra-low latency](https://aws.amazon.com/elasticloadbalancing/network-load-balancer/)
+- [Preserves source IP](https://docs.aws.amazon.com/elasticloadbalancing/latest/network/edit-target-group-attributes.html) by default for instance-type targets; varies for IP-type targets (enabled for UDP/QUIC, disabled for TCP/TLS)
 
 **Static IP support**:
 
 - One static IP per Availability Zone
 - Elastic IP addresses can be assigned (internet-facing)
 - Private static IPs for internal NLBs
-- Cannot modify subnets or Elastic IPs after creation
+- [Subnets can be added/removed after creation](https://docs.aws.amazon.com/elasticloadbalancing/latest/network/availability-zones.html); Elastic IPs are assigned when enabling a subnet and cannot be changed without removing and re-adding the subnet
 
 **Cross-zone load balancing**: Disabled by default (can enable)
 
-**Routing**: Uses 5-tuple flow hash (protocol, source IP, destination IP, source port, destination port)
+**Routing**: Uses [flow hash algorithm](https://docs.aws.amazon.com/elasticloadbalancing/latest/userguide/how-elastic-load-balancing-works.html) based on protocol, source/destination IP and port; TCP includes sequence number (6-tuple), UDP uses 5-tuple
 
 > [↑ Back to Table of Contents](#table-of-contents)
 
