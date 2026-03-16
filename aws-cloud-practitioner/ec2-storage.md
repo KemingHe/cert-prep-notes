@@ -67,8 +67,9 @@ EC2 offers three storage types with distinct characteristics:
 
 | Volume Type | Default Behavior |
 | :--- | :--- |
-| Root volume | [Deleted on termination](https://docs.aws.amazon.com/ebs/latest/userguide/EBSFeatures.html) |
-| Additional data volumes | [Preserved on termination](https://docs.aws.amazon.com/ebs/latest/userguide/EBSFeatures.html) |
+| Root volume | [Deleted on termination](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/preserving-volumes-on-termination.html) |
+| Data volumes attached via Console or after launch | [Preserved on termination](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/preserving-volumes-on-termination.html) |
+| Data volumes attached at launch via CLI | [Deleted on termination](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/preserving-volumes-on-termination.html) |
 
 Configure via the `DeleteOnTermination` attribute when launching or in the console.
 

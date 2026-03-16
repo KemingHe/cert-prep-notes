@@ -1,6 +1,6 @@
 # Study Notes - Amazon EC2 (Elastic Compute Cloud)
 
-> **Last Updated**: 2026-02-25 by Keming He
+> **Last Updated**: 2026-03-16 by Keming He
 
 ## Table of Contents
 
@@ -21,10 +21,11 @@
     - [AWS Responsibilities](#aws-responsibilities)
     - [Customer Responsibilities](#customer-responsibilities)
   - [Best Practices](#best-practices)
+  - [References](#references)
 
 ## What is EC2?
 
-EC2 (Elastic Compute Cloud) is AWS's IaaS offering for renting virtual machines in the cloud. As IaaS, the customer manages everything from the OS up; AWS manages the physical infrastructure and hypervisor.
+[Amazon EC2 (Elastic Compute Cloud)](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/concepts.html) is AWS's IaaS offering for renting virtual machines in the cloud. As IaaS, the customer manages everything from the OS up; AWS manages the physical infrastructure and hypervisor.
 
 - **EC2 instances**: Virtual machines running your workloads
 - **EBS / EFS**: Network-attached storage volumes
@@ -39,10 +40,10 @@ An EC2 instance is fully defined by: AMI (OS) + instance size (CPU + RAM) + stor
 
 ## Amazon Machine Image (AMI)
 
-An AMI is a pre-configured template containing the OS and software stack used to launch EC2 instances.
+An [AMI](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/AMIs.html) is a pre-configured template containing the OS and software stack used to launch EC2 instances.
 
-- **Region-specific**: AMIs belong to one region; copy them to other regions as needed
-- **Sources**: AWS-provided, AWS Marketplace, community-published, or custom (captured from an existing running instance)
+- **Region-specific**: [AMIs belong to one region](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/CopyingAMIs.html); copy them to other regions as needed
+- **Sources**: [AWS-provided, AWS Marketplace, community-published, or custom](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/finding-an-ami.html) (captured from an existing running instance)
 - One AMI can launch many instances with identical configurations
 - Custom AMIs let you pre-bake software so instances launch faster with less User Data work
 
@@ -52,11 +53,11 @@ An AMI is a pre-configured template containing the OS and software stack used to
 
 ## Instance Types and Naming
 
-Instance names follow the pattern `[family][generation][options].[size]`, e.g., `t3.micro` or `c7gn.xlarge`.
+[Instance names](https://docs.aws.amazon.com/ec2/latest/instancetypes/instance-type-names.html) follow the pattern `[family][generation][options].[size]`, e.g., `t3.micro` or `c7gn.xlarge`.
 
 | Category | Prefix | Best For |
 | :--- | :--- | :--- |
-| General purpose | `m`, `t` | Balanced compute, memory, and networking; `t` types offer burstable CPU |
+| General purpose | `m`, `t` | Balanced compute, memory, and networking; [`t` types offer burstable CPU](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/burstable-performance-instances.html) |
 | Compute optimized | `c` | Batch processing, media encoding, high-performance web servers |
 | Memory optimized | `r`, `x` | In-memory databases, Apache Spark, real-time caching |
 | Storage optimized | `i`, `d`, `h` | High IOPS workloads, data warehousing, distributed file systems |
@@ -71,12 +72,12 @@ Instance names follow the pattern `[family][generation][options].[size]`, e.g., 
 
 | Type | Attachment | Persistence | Notes |
 | :--- | :--- | :--- | :--- |
-| **EBS** (Elastic Block Store) | Network-attached | Conditional (see notes below) | Single-AZ; attaches to one instance at a time |
-| **EFS** (Elastic File System) | Network-attached | Survives independently | Shared across many instances and AZs; scales automatically; Linux only |
-| **Instance Store** | Hardware-attached (physical disk on host) | Ephemeral - data lost on stop or terminate | Highest I/O performance; use for temp data, caches, or buffers only |
+| **[EBS](https://docs.aws.amazon.com/ebs/latest/userguide/ebs-volumes.html)** (Elastic Block Store) | Network-attached | Conditional (see notes below) | [Single-AZ](https://docs.aws.amazon.com/ebs/latest/userguide/ebs-volumes.html); typically attaches to one instance at a time (exception: [io1/io2 volumes with Multi-Attach](https://docs.aws.amazon.com/ebs/latest/userguide/ebs-volumes-multi.html) support up to 16 Nitro instances in same AZ) |
+| **[EFS](https://docs.aws.amazon.com/efs/latest/ug/features.html)** (Elastic File System) | Network-attached | Survives independently | Shared across many instances and AZs; scales automatically; [Linux only](https://docs.aws.amazon.com/efs/latest/ug/troubleshooting-efs-mounting.html) |
+| **[Instance Store](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/InstanceStorage.html)** | Hardware-attached (physical disk on host) | [Ephemeral - data lost on stop or terminate](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/instance-store-lifetime.html) | Highest I/O performance; use for temp data, caches, or buffers only |
 
-- Stopping an instance preserves all EBS and EFS data; private IP and IAM role are also retained
-- Terminating an instance permanently deletes instance store data and the root EBS volume (by default); attached EBS data volumes persist unless configured with DeleteOnTermination
+- [Stopping an instance](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/how-ec2-instance-stop-start-works.html) preserves all EBS and EFS data; private IP and IAM role are also retained
+- [Terminating an instance](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/how-ec2-instance-termination-works.html) permanently deletes instance store data and the root EBS volume (by default); attached EBS data volumes persist unless configured with DeleteOnTermination
 
 > [↑ Back to Table of Contents](#table-of-contents)
 
@@ -84,9 +85,9 @@ Instance names follow the pattern `[family][generation][options].[size]`, e.g., 
 
 ## Networking and IP Addressing
 
-- **Public IP**: Assigned from AWS's pool on instance start; changes every time the instance is stopped and restarted
-- **Private IP**: Assigned within the VPC at launch; persistent across stop/start cycles for the life of the instance
-- **Elastic IP**: Static public IPv4 address you allocate to your account; survives stop/start and can be remapped to another instance; charged when not associated with a running instance; use sparingly
+- **[Public IP](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/using-instance-addressing.html)**: Assigned from AWS's pool on instance start; changes every time the instance is stopped and restarted
+- **[Private IP](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/using-instance-addressing.html)**: Assigned within the VPC at launch; persistent across stop/start cycles for the life of the instance
+- **[Elastic IP](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/elastic-ip-addresses-eip.html)**: Static public IPv4 address you allocate to your account; survives stop/start and can be remapped to another instance; charged for all Elastic IPs whether in use or idle; use sparingly
 
 > [↑ Back to Table of Contents](#table-of-contents)
 
@@ -94,14 +95,14 @@ Instance names follow the pattern `[family][generation][options].[size]`, e.g., 
 
 ## Security Groups
 
-Security groups are stateful firewalls controlling inbound and outbound traffic at the EC2 instance level.
+[Security groups](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-security-groups.html) are [stateful firewalls](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/security-group-connection-tracking.html) controlling inbound and outbound traffic at the EC2 instance level.
 
-- Contain **allow rules only** - traffic not explicitly permitted is implicitly denied
+- Contain **[allow rules only](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/security-group-rules.html)** - traffic not explicitly permitted is implicitly denied
 - **Stateful**: return traffic for allowed connections is automatically permitted in the opposite direction
 - Rules reference **IP ranges (CIDR)** or **other security groups** (e.g., allow inbound only from the load balancer's security group)
-- **VPC-scoped**: a security group belongs to one VPC; cannot span VPCs
+- **VPC scope**: traditionally VPC-scoped, but can now [associate with multiple VPCs in the same region](https://docs.aws.amazon.com/vpc/latest/userguide/security-group-assoc.html) (feature added October 2024)
 - One instance can have multiple security groups attached; one security group can be attached to many instances
-- Default behavior: all inbound blocked, all outbound allowed
+- [Default security group behavior](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/default-custom-security-groups.html): inbound allowed from same security group only, all outbound allowed to any destination
 
 ### Key Ports
 
@@ -116,8 +117,8 @@ Security groups are stateful firewalls controlling inbound and outbound traffic 
 ### Connecting to Instances
 
 - **Linux / macOS / Windows 10+**: `ssh -i [key].pem ec2-user@[public-ip]`; first run `chmod 400 [key].pem` to protect the key file
-- **Older Windows (before Windows 10)**: PuTTY with a `.ppk` converted key
-- **EC2 Instance Connect**: browser-based SSH from the AWS Console; no local SSH client needed; works from any OS
+- **Older Windows (before Windows 10)**: [PuTTY](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/putty.html) with a `.ppk` converted key
+- **[EC2 Instance Connect](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/connect-linux-inst-eic.html)**: browser-based SSH from the AWS Console; no local SSH client needed; works from any OS
 
 ### Troubleshooting
 
@@ -129,6 +130,8 @@ Security groups are stateful firewalls controlling inbound and outbound traffic 
 ---
 
 ## EC2 User Data (Bootstrap Scripts)
+
+[EC2 User Data](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/user-data.html) allows you to run scripts at instance launch:
 
 - Runs **once only** at first instance launch, as the `root` user (no `sudo` needed)
 - Common uses: install packages, pull application code, write config files - any one-time setup before the app starts
@@ -143,19 +146,19 @@ Security groups are stateful firewalls controlling inbound and outbound traffic 
 | Option | Commitment | Discount vs. On-Demand | Best For |
 | :--- | :--- | :--- | :--- |
 | **On-Demand** | None | Baseline price | Short, unpredictable, or uninterruptible workloads; no upfront payment |
-| **Reserved Instances (RI)** | 1 or 3 years | Up to 72% | Steady-state workloads (e.g., production databases); locked to instance family + region |
-| **Convertible RI** | 1 or 3 years | Up to 66% | Same as RI but allows changing instance family, OS, scope, and tenancy |
-| **Savings Plans** | 1 or 3 years | Up to 72% | Commit to a $/hr usage amount; flexible across instance size, OS, and tenancy within a family/region; AWS-recommended over RIs |
-| **Spot Instances** | None | Up to 90% | Fault-tolerant, stateless, batch, or distributed workloads; AWS reclaims with a **2-minute warning** |
-| **Dedicated Hosts** | On-Demand or 1/3 yr RI | Varies | Compliance needs or BYOL server-bound software licenses; most expensive option; full visibility and control over socket/core placement |
+| **[Reserved Instances (RI)](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-reserved-instances.html)** | 1 or 3 years | Up to 72% | Steady-state workloads (e.g., production databases); locked to instance family + region |
+| **Convertible RI** | 1 or 3 years | [Up to 66%](https://aws.amazon.com/ec2/pricing/reserved-instances/pricing/) | Same as RI but allows changing instance family, OS, scope, and tenancy |
+| **[Savings Plans](https://docs.aws.amazon.com/savingsplans/latest/userguide/plan-types.html)** | 1 or 3 years | Up to 72% | Commit to a $/hr usage amount; flexible across instance size, OS, and tenancy within a family/region; AWS-recommended over RIs |
+| **[Spot Instances](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/using-spot-instances.html)** | None | Up to 90% | Fault-tolerant, stateless, batch, or distributed workloads; AWS reclaims with a [2-minute warning](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/spot-instance-termination-notices.html) |
+| **[Dedicated Hosts](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/dedicated-hosts-overview.html)** | On-Demand or 1/3 yr RI | Varies | Compliance needs or BYOL server-bound software licenses; most expensive option; [full visibility and control over socket/core placement](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/dedicated-hosts-billing.html) |
 | **Dedicated Instances** | On-Demand | Varies | Single-tenant hardware; no control over host placement; may share the same host with other instances in the same account |
 | **Capacity Reservation** | None | 0% (no discount) | Reserve On-Demand capacity in a specific AZ for any duration; billed at On-Demand rates whether or not instances are running |
 
 Key rules:
 
-- More upfront payment = larger discount (All Upfront > Partial Upfront > No Upfront)
+- More upfront payment = larger discount ([All Upfront > Partial Upfront > No Upfront](https://aws.amazon.com/ec2/pricing/reserved-instances/pricing/))
 - RI terms are fixed at 1 year or 3 years - no 2-year option
-- Standard RIs can be listed and sold in the RI Marketplace; Convertible RIs cannot
+- [Standard RIs can be listed and sold in the RI Marketplace; Convertible RIs cannot](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ri-market-general.html)
 - Spot usage beyond a Savings Plan commitment is billed at On-Demand rates
 
 > [↑ Back to Table of Contents](#table-of-contents)
@@ -185,11 +188,23 @@ Key rules:
 
 ## Best Practices
 
-- Attach IAM roles to EC2 instances for AWS API access - never store access keys directly on an instance
+- Attach [IAM roles](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/iam-roles-for-amazon-ec2.html) to EC2 instances for AWS API access - never store access keys directly on an instance
 - Maintain a dedicated security group for SSH/RDP access with restricted source IPs; keep it separate from application traffic rules
 - Use EC2 User Data for repeatable bootstrapping; bake frequently reused setup into a custom AMI to reduce boot time
 - Prefer Savings Plans over Reserved Instances for most workloads - more flexible at similar discount levels
 - Design Spot Instance workloads to checkpoint state and handle the 2-minute interruption warning gracefully
 - Use DNS names or load balancers for stable endpoints rather than Elastic IPs to avoid idle IP charges
+
+> [↑ Back to Table of Contents](#table-of-contents)
+
+---
+
+## References
+
+- [Amazon EC2 User Guide](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/)
+- [EC2 instance types](https://docs.aws.amazon.com/ec2/latest/instancetypes/)
+- [Amazon EBS User Guide](https://docs.aws.amazon.com/ebs/latest/userguide/)
+- [Amazon EFS User Guide](https://docs.aws.amazon.com/efs/latest/ug/)
+- [EC2 pricing models](https://aws.amazon.com/ec2/pricing/)
 
 > [↑ Back to Table of Contents](#table-of-contents)
