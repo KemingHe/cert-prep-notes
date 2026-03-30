@@ -98,7 +98,7 @@
 
 **Read Replicas**:
 
-- [Up to 15 read replicas](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/CHAP_Limits.html) per primary instance
+- [Up to 15 read replicas](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/CHAP_Limits.html) per primary instance
 - Asynchronous replication from primary (read-write) to replicas (read-only)
 - [Cross-region read replicas](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_ReadRepl.XRgn.html) supported for MySQL, PostgreSQL, MariaDB, Oracle, SQL Server (not Db2)
 - Good for read-heavy OLAP workloads and local read performance
@@ -189,7 +189,7 @@
 
 - [Primary key](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/HowItWorks.CoreComponents.html) options:
   - Simple: Partition key only
-  - Composite: Partition key + sort key (sort key is optional)
+  - Composite: Partition key + sort key (both required for each item)
 - [No native JOIN support](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/Introduction.html) - denormalize data or use application-side joins
 
 **Table classes**:
