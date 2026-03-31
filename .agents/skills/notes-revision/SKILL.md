@@ -7,7 +7,7 @@ description: |
 license: MIT
 metadata:
   author: KemingHe
-  version: "1.2.0"
+  version: "2.0.0"
 ---
 
 # Notes Revision
@@ -29,65 +29,112 @@ This skill references the following assets:
 
 - `./assets/notes-template.md` - template for revised notes structure and required sections
 
-## Process
+## Orchestrator Role
 
-### Step 1: Acquire Context
+The orchestrator (main agent context) coordinates subagents without introducing bias.
 
-Before revising, gather:
+**Responsibilities**:
+
+- Compile subagent results into structured summaries
+- Identify discrepancies between subagent reports
+- Defer judgment until multiple sources confirm
+- Track claims with conflicting reports across phases
+- Maintain edit context history with user
+- Generate draft only after Initial Verification Phase completes
+
+**Prohibited**:
+
+- Auto-trusting any single subagent output
+- Applying corrections without multi-source confirmation
+- Adding interpretive bias when compiling results
+
+**Conflict Resolution**: When official sources conflict, prioritize by: (1) most recent date, (2) more specific documentation (API reference over marketing), (3) primary service documentation over cross-references. Document justification for user transparency.
+
+## Process Overview
+
+The revision process uses named phases instead of numbered rounds for clarity:
+
+| Phase | Purpose | Agents |
+| :--- | :--- | :--- |
+| Preparation | Token warning, claims inventory | Orchestrator only |
+| Initial Verification | Fact-check claims against official docs | 3-4 parallel subagents by domain |
+| Draft Generation | Generate revised document with verified facts | Orchestrator only |
+| Self-Verification | Verify generated content with fresh context | 3-4 fresh-context subagents by claim type |
+| Resolution | Resolve discrepancies via tie-breaking | Independent subagents as needed |
+| Validation | Link checks, linter, final review | Orchestrator + subagents |
+
+## Preparation Phase
+
+### Token Cost Warning
+
+Before proceeding, warn user:
+
+```plaintext
+This revision process uses multiple parallel subagents across several phases to ensure accuracy. It will incur significant token cost in exchange for high-quality, thoroughly verified output. Proceed?
+```
+
+Wait for explicit user confirmation before continuing.
+
+### Acquire Context
+
+Gather before revising:
 
 1. **Target notes file(s)**: Read the file(s) to be revised
 2. **Reference format**: Check existing revised notes in the same directory for style consistency
 3. **Platform**: Identify the certification/platform (AWS, Azure, GCP, Terraform, etc.)
-4. **Skills to reference**:
-   - Senior mentor skill (persona, domain expertise)
-   - Documentation review skill (formatting checklist, GDC)
+4. **Skills to reference**: Senior mentor skill (persona), documentation review skill (formatting checklist)
 
-### Step 2: Fact-Check with Parallel Agents (CRITICAL)
+### Claims Inventory
 
-**This step is non-negotiable.** All factual claims must be verified against official documentation via live data fetching before revision.
+Before launching subagents, compile all verifiable claims from source notes:
 
-**Requirements**:
+| Category | Examples |
+| :--- | :--- |
+| Numeric | Percentages, limits, durations, capacities |
+| Feature status | Serverless, managed, HA, deprecated |
+| Integrations | Service X works with Service Y |
+| Performance | Latency, throughput, cost comparisons |
 
-- Send 3-4 parallel subagents to fetch and verify facts
-- Each agent targets different topic areas for comprehensive coverage
-- All verified facts must include the verification date
-- Record source URLs for traceability
+Organize into groups for parallel agent distribution. Each group should target 10-20 claims to balance parallelism with manageability.
 
-**Agent prompt template** (copy and customize):
+## Initial Verification Phase
+
+**This phase is non-negotiable.** All factual claims must be verified against official documentation via live data fetching.
+
+### Launch Parallel Subagents
+
+Send 3-4 parallel subagents, each targeting different topic areas (by domain/service):
+
+**Agent prompt template**:
 
 ```plaintext
 Fetch and verify facts about [TOPIC] from official [PLATFORM] documentation.
 
 Use WebSearch and WebFetch to find the latest [PLATFORM] documentation ([CURRENT_YEAR]) for:
-1. [Specific fact to verify]
-2. [Specific fact to verify]
-3. [Specific fact to verify]
+1. [Specific claim with source line reference]
+2. [Specific claim with source line reference]
 ...
 
-Return a structured summary:
-- Verified facts with any corrections needed
-- Verification date: [TODAY'S DATE]
-- Source URLs (official docs only)
+Return a structured report:
+| Claim # | Status | Original | Correction (if any) | Source URL |
+| :--- | :--- | :--- | :--- | :--- |
+| 1 | VERIFIED/INCORRECT/UNVERIFIED | ... | ... | https://... |
+
+Verification date: [TODAY'S DATE]
 ```
 
-**Example for AWS EC2 storage**:
+### Orchestrator Compilation
 
-```plaintext
-Fetch and verify facts about Amazon EBS from official AWS documentation.
+After subagents complete:
 
-Use WebSearch and WebFetch to find the latest AWS documentation (2026) for:
-1. EBS volume types and multi-attach capability
-2. EBS snapshots - region-bound vs AZ-bound
-3. Delete on termination default behavior
-4. EBS provisioned capacity billing model
+1. Compile all results into unified summary
+2. Identify claims with INCORRECT or UNVERIFIED status
+3. Note any conflicting reports between subagents
+4. Do NOT apply corrections yet - only compile
 
-Return a structured summary:
-- Verified facts with any corrections needed
-- Verification date: 2026-02-25
-- Source URLs (official docs only)
-```
+## Draft Generation Phase
 
-### Step 3: Reorganize by Logic and Importance
+### Reorganize by Logic and Importance
 
 **Do NOT preserve the user's original note order blindly.** Restructure based on:
 
@@ -100,14 +147,7 @@ Return a structured summary:
 | 5 | Best practices | Recommendations, common patterns |
 | 6 | Shared responsibility | AWS vs Customer responsibilities |
 
-**Grouping principles**:
-
-- Group related concepts together (e.g., all EBS topics before EFS)
-- Place foundational concepts before advanced ones
-- Put frequently referenced info (tables, quick reference) early
-- End with actionable guidance (best practices)
-
-### Step 4: Apply Documentation Standards
+### Apply Documentation Standards
 
 **Required sections for each revised file**:
 
@@ -123,51 +163,36 @@ Return a structured summary:
 
 **Reference linking policy**:
 
-All verified facts from subagent research must include inline source links.
-
 - **Format**: `[descriptive text](url)` where text is meaningful, not generic
-- **Good examples**:
-  - `[Six Advantages of Cloud Computing](url)` - descriptive concept name
-  - `[Application Load Balancers user guide](url)` - specific resource type + guide
-  - `[scheduled scaling in Amazon EC2 Auto Scaling](url)` - feature + service context
-- **Bad examples**:
-  - `click here` or `see docs` - too generic
-  - `[ALB documentation](url)` - generic "documentation" label
-  - `[see this page](url)` - non-descriptive anchor
-- **URL preferences**:
-  - Prefer canonical URLs over dated snapshots (i.e. `docs.aws.amazon.com` over `wa.aws.amazon.com/wellarchitected/2020-07-02T19-33-23/...`)
-  - Use `/latest/` paths when available for evergreen links
-- **When to link**: Every verified claim (definitions, feature lists, version numbers, deprecation dates, best practices)
-- **References section**: Include only URLs NOT already inlined; use for broad resources or further reading that lack a natural inline anchor
+- **Good**: `[Six Advantages of Cloud Computing](url)`, `[scheduled scaling in Amazon EC2 Auto Scaling](url)`
+- **Bad**: `click here`, `see docs`, `[documentation](url)`
+- **URL preferences**: Prefer canonical URLs over dated snapshots; use `/latest/` paths
+- **When to link**: Every verified claim (definitions, feature lists, version numbers, deprecation dates)
+- **References section**: Include only URLs NOT already inlined
 
-**Apply documentation review checklist**:
-
-| Dimension | Check For |
-| :--- | :--- |
-| Consistency | Terminology, voice, header levels, table formatting |
-| Correctness | Verified facts, valid YAML/markdown, working links |
-| Completeness | Required sections present, no unfilled placeholders |
-| Freshness | Last Updated date matches revision date |
-| Characters | QWERTY only (exception: `↑` for ToC) |
-| Linter | Check IDE linter errors after edits |
-
-### Step 5: Self-Verification (CRITICAL)
+## Self-Verification Phase
 
 **Do NOT trust your own generated content.** After drafting, verify all claims as if they came from an external source.
 
-**5.1 Compile claims inventory**:
+### Fresh-Context Requirement
 
-Extract all verifiable claims from the generated draft:
+Self-verification agents MUST have zero context from Initial Verification Phase. Launch new Task subagents - do not resume or continue previous agents. This prevents confirmation bias.
 
-- Numeric values (percentages, limits, durations, capacities)
-- Dates (release dates, deprecation dates, effective dates)
-- Feature status (preview vs GA, deprecated, discontinued)
-- Behavioral defaults (enabled/disabled, required/optional)
-- Specific qualifiers (which tier, which analyzer type, which region)
+### Categorization Strategy
 
-Organize claims by category for parallel verification.
+| Phase | Categorize By | Rationale |
+| :--- | :--- | :--- |
+| Initial Verification | Domain/service | Expertise grouping |
+| Self-Verification | Claim type | Different error patterns |
 
-**5.2 Run second-pass verification**:
+**Claim type categories for Self-Verification**:
+
+- Numeric claims (percentages, limits, durations)
+- Feature status claims (serverless, managed, HA)
+- Integration claims (what works with what)
+- Performance claims (latency, throughput, cost)
+
+### Launch Fresh-Context Subagents
 
 Send 3-4 parallel subagents to verify the GENERATED claims (not user input):
 
@@ -177,36 +202,71 @@ Verify claims from the generated draft against official [PLATFORM] documentation
 Use WebSearch and WebFetch to find the latest [PLATFORM] documentation ([CURRENT_YEAR]) for:
 1. [Claim from generated draft with line reference]
 2. [Claim from generated draft with line reference]
-3. [Claim from generated draft with line reference]
 ...
 
 For each claim, return:
-- VERIFIED (exact match) or INCORRECT (with correction)
+- VERIFIED (exact match) or INCORRECT (with correction) or UNVERIFIED (could not confirm)
 - Source URL from official documentation
 - Verification date: [TODAY'S DATE]
 ```
 
-**5.3 Double-check discrepancies**:
+### Orchestrator Identifies Discrepancies
 
-For any claim marked INCORRECT:
+Compare Self-Verification results against Initial Verification and draft:
 
-- Have a second agent independently verify the correction
-- Only apply corrections confirmed by both sources
-- This prevents replacing one hallucination with another
+- Claims marked INCORRECT in Self-Verification proceed to Resolution Phase
+- Claims with conflicting status between phases proceed to Resolution Phase
+- Claims consistently VERIFIED across phases are confirmed
 
-**5.4 Apply corrections**:
+## Resolution Phase
 
-- Fix incorrect claims with verified information
-- Add missing inline source links for all corrections
-- Update Last Updated date to reflect verification date
+For any claim marked INCORRECT or with conflicting reports:
 
-### Step 6: Final Verification
+1. Launch independent subagent with fresh context to verify the correction
+2. Only apply corrections confirmed by both phases
+3. If still conflicting, apply conflict resolution rules (see Orchestrator Role)
+4. This prevents replacing one hallucination with another
 
-After completing the revision:
+## Validation Phase
 
-1. **Linter check**: Run `ReadLints` on all edited files
-2. **ToC reminder**: Tell user to auto-generate ToC using editor tools
-3. **Summary**: Report corrections made, facts verified, structure changes
+### Link Accessibility
+
+Verify all inline URLs return HTTP 200:
+
+- Use subagents to batch-check links
+- Report broken links for correction
+
+### Link Semantic Validation
+
+Verify link target matches claim context:
+
+- RDS claim should link to RDS documentation, not Aurora
+- Service-specific claims should link to that service's docs
+- Flag mismatched links for correction
+
+### Linter Check
+
+1. Run `ReadLints` on all edited files
+2. Fix introduced errors before finalizing
+
+### Final Report
+
+Present to user:
+
+- Total claims verified
+- Corrections applied with justification
+- Structure changes made
+- Any UNVERIFIED claims requiring manual review
+- Reminder to auto-generate ToC using editor tools
+
+## Subagent Failure Handling
+
+| Failure Type | Action |
+| :--- | :--- |
+| Timeout or garbage output | Restart subagent with fresh context; orchestrator may modify prompt |
+| Cannot find documentation | Mark claim as UNVERIFIED; report to user for manual review |
+| Conflicting reports (same phase) | Escalate to Resolution Phase for tie-breaking |
+| Unrecoverable error | Halt and report to user with full context |
 
 ## General Doc Constraints
 
@@ -224,10 +284,15 @@ Apply to all generated output. If a discovered template deviates from any rule (
 
 ## Skill Constraints
 
+- **Token warning mandatory**: Always warn user about cost before proceeding
 - **Parallel agents mandatory**: Fact-checking with 3-4 parallel subagents is non-negotiable
-- **Self-verification mandatory**: After generating draft, run second-pass verification on own output before finalizing
+- **Fresh context mandatory**: Self-verification must use new subagents with no prior context
+- **Link validation mandatory**: Verify both accessibility and semantic correctness
+- **Orchestrator neutrality**: Compile without bias; defer judgment until multi-source confirmation
+- **Self-verification mandatory**: After generating draft, run second-pass verification on own output
 - **Date stamp all facts**: Every verified fact must include verification date
 - **Inline source links required**: All verified facts must include inline links to official documentation
 - **Reorganize by logic**: Do not blindly preserve user's original note order
 - **ToC is tooling-generated**: Never manually maintain Table of Contents
+- **Failure escalation**: Unrecoverable errors halt with user report
 - **Platform-agnostic**: Works for AWS, Azure, GCP, Terraform, Kubernetes, or any certification
