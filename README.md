@@ -1,10 +1,14 @@
-# README - Certification Preparation Notes
-
-> **Last Updated**: 2026-03-07 by Keming He
+# ⚠️ [Archived] ⚠️ README - Certification Preparation Notes
 
 Certification study notes fact-checked against official cloud platform documentation. Personal archive and public reference resource for exam preparation.
 
-**Current focus**: AWS Cloud Practitioner (CLF-C02)
+> [!WARNING]
+>
+> This repository is archived and no longer maintained. Claims were verified at each document's **Last Updated** date via [`notes-revision`](.agents/skills/notes-revision/README.md) skill.
+>
+> - **Archived**: 2026-03-30 by [@KemingHe](https://github.com/KemingHe)
+> - **Archive Reason**: Author now focusing on different career priorities
+> - **Inquries and Corrections**: Email keminghe[dot]career[at]gmail[dot]com
 
 ## Certifications
 
