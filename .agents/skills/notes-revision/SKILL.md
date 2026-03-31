@@ -231,10 +231,12 @@ For any claim marked INCORRECT or with conflicting reports:
 
 ### Link Accessibility
 
-Verify all inline URLs return HTTP 200:
+Verify all inline URLs resolve successfully:
 
-- Use subagents to batch-check links
-- Report broken links for correction
+- Accept HTTP 2xx responses as valid
+- Follow 3xx redirects and accept if final destination returns 2xx
+- Treat 403/429 as potentially valid (bot detection or rate limiting) - verify manually if critical
+- Report genuinely broken links (4xx except 403, 5xx) for correction
 
 ### Link Semantic Validation
 
